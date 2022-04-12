@@ -15,7 +15,5 @@ main = do
   putStr "(((3 ^ 2) ^ 2) ^ 2) ^ 2 = "
   print (iter 4 square 3)
 
-  putStr "rotate \"haskell\" 7 times = "
+  putStr "rotate \"haskell\" 2 times = "
   print (iter 2 rotateLeft "haskell")
-
-  print ""
