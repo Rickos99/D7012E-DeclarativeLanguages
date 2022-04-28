@@ -15,6 +15,7 @@ data Statement
   | While Expr.T Statement
   | Read String
   | Write Expr.T
+  | Repeat Statement Expr.T
   deriving (Show)
 
 -- SYNTAX: variable ':=' expr ';'
@@ -59,6 +60,12 @@ write = accept "write" -# Expr.parse #- require ";" >-> buildWrite
   where
     buildWrite e = Write e
 
+-- SYNTAX: ’repeat’ statement ’until’ expr ’;’
+repeat' :: Parser Statement
+repeat' = accept "repeat" -# parse #- require "until" # Expr.parse #- require ";" >-> buildRepeat
+  where
+    buildRepeat (s, e) = Repeat s e
+
 exec :: [T] -> Dictionary.T String Integer -> [Integer] -> [Integer]
 exec (Assignment v e : stmts) dict input = exec stmts (Dictionary.insert (v, Expr.value e dict) dict) input
 exec (Skip : stmts) dict input = exec stmts dict input
@@ -74,10 +81,11 @@ exec (While cond stmtsW : stmts) dict input =
 exec (Read v : stmts) dict [] = error ("Input list was empty. Found no integers to read into" ++ v)
 exec (Read v : stmts) dict (input : inputs) = exec stmts (Dictionary.insert (v, input) dict) inputs
 exec (Write e : stmts) dict input = Expr.value e dict : exec stmts dict input
+exec (Repeat stmt cond : stmts) dict input = exec (stmt : While cond stmt : stmts) dict input
 exec [] _ _ = [] -- End of instructions
 
 instance Parse Statement where
-  parse = assignment ! skip ! begin ! if' ! while ! read' ! write
+  parse = assignment ! skip ! begin ! if' ! while ! read' ! write ! repeat'
   toString t = buildString t 0
     where
       buildString :: T -> Int -> String
@@ -88,6 +96,7 @@ instance Parse Statement where
       buildString ((While e s)) indent = makeIndent indent ++ "while " ++ Expr.toString e ++ " do\n" ++ buildString s (indent + 1)
       buildString ((Read s)) indent = makeIndent indent ++ "read " ++ s ++ ";\n"
       buildString ((Write e)) indent = makeIndent indent ++ "write " ++ Expr.toString e ++ ";\n"
+      buildString ((Repeat s e)) indent = makeIndent indent ++ "repeat\n" ++ buildString s (indent + 1) ++ makeIndent indent ++ "until " ++ Expr.toString e ++ ";\n"
 
       makeIndent :: Int -> String
       makeIndent i = replicate indentSpaces ' '
