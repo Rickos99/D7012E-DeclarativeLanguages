@@ -9,6 +9,7 @@
 /* ------------------------------------------------------- */
 
 :- ensure_loaded('play.pl').
+% :- ensure_loaded('stupid.pl'). % uncomment to make stupid computer replace the human player.
 
 % /* ------------------------------------------------------ */
 %               IMPORTANT! PLEASE READ THIS SUMMARY:
