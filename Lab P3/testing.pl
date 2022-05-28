@@ -22,6 +22,23 @@ mtest3(Moves) :-
   testBoard5(State),
   moves(1, State, Moves).
 
+% Should be, Moves = [n].
+mtest4(Moves) :-
+  testBoard8(State),
+  moves(1, State, Moves).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%% Test null move %%%%%%%%%%%%%%%%%%%%%%%%%
+% Should be, true.
+nultest1 :-
+  testBoard8(State),
+  validmove(1, State, n).
+
+% Should be, false.
+nultest2 :-
+  testBoard1(State),
+  validmove(1, State, n).
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Test terminal %%%%%%%%%%%%%%%%%%%%%%%%%
 % Should be, false.

@@ -212,6 +212,9 @@ onboard([X,Y]) :-
 %% define validmove(Plyr,State,Proposed). 
 %   - true if Proposed move by Plyr is valid at State.
 
+validmove(Plyr, State, n) :- 
+	moves(Plyr, State, Moves),
+	Moves = [n], !.
 validmove(Plyr, State, Proposed) :- 
 	get(State, Proposed, Square), Square = '.',
 	(flankScore(n, Plyr, State, Proposed, Sn), Sn > 0, !;
